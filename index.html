@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Relatório Odontológico Veterinário</title>
+
+<style>
+
+@page{
+    size:A4;
+    margin:10mm;
+}
+
+body{
+    margin:0;
+    background:#eef3f6;
+    font-family:Arial,sans-serif;
+    color:#1f2933;
+}
+
+.container{
+    max-width:1100px;
+    margin:20px auto;
+    background:white;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.header h1{
+    margin:0;
+    font-size:28px;
+}
+
+.subtitle{
+    color:#607d8b;
+    margin-top:5px;
+}
+
+.section{
+    margin-bottom:28px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:5px;
+    color:#455a64;
+}
+
+input,
+select,
+textarea{
+    border:1px solid #cfd8dc;
+    border-radius:12px;
+    padding:11px;
+    font-size:14px;
+    box-sizing:border-box;
+    width:100%;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.toolbar{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+
+.odontograma{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+}
+
+.row-title{
+    width:140px;
+    font-weight:700;
+    color:#455a64;
+}
+
+.tooth{
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    border:2px solid #b0bec5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    cursor:pointer;
+    background:white;
+    transition:.2s;
+}
+
+.tooth:hover{
+    transform:scale(1.05);
+}
+
+.selected{
+    background:#42a5f5;
+    border-color:#42a5f5;
+    color:white;
+}
+
+.alert{
+    background:#ef5350;
+    border-color:#ef5350;
+    color:white;
+}
+
+.extracted{
+    background:#616161;
+    border-color:#616161;
+    color:white;
+}
+
+.images{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.image-box{
+    border:2px dashed #cfd8dc;
+    border-radius:14px;
+    min-height:140px;
+    max-height:180px;
+    overflow:hidden;
+    background:#fafafa;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+
+.image-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.image-box input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+}
+
+.laudo{
+    background:#fafafa;
+    border:1px solid #e0e0e0;
+    border-radius:16px;
+    padding:24px;
+    white-space:pre-line;
+    line-height:1.7;
+    font-size:15px;
+}
+
+.buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:none;
+    background:#1976d2;
+    color:white;
+    padding:13px 20px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+button:hover{
+    opacity:.92;
+}
+
+.assinatura{
+    margin-top:50px;
+    text-align:center;
+}
+
+.assinatura input{
+    border:none;
+    border-bottom:1px solid #999;
+    border-radius:0;
+    text-align:center;
+    max-width:320px;
+    background:transparent;
+}
+
+.print-hide{
+    display:block;
+}
+
+@media print{
+
+    body{
+        background:white;
+        padding:0;
+    }
+
+    .container{
+        box-shadow:none;
+        border-radius:0;
+        max-width:100%;
+        padding:0;
+    }
+
+    .print-hide{
+        display:none !important;
+    }
+
+    input,
+    select,
+    textarea{
+        border:none;
+        padding:0;
+        background:transparent;
+    }
+
+    .image-box{
+        border:none;
+    }
+
+    button{
+        display:none;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div>
+<h1>Relatório Odontológico Veterinário</h1>
+<div class="subtitle">Radiologia Odontológica Veterinária</div>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="grid">
+
+<div class="field">
+<label>Nome do animal</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Tutor</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Espécie</label>
+<select id="species" onchange="renderTeeth()">
+<option value="cao">Canino</option>
+<option value="gato">Felino</option>
+</select>
+</div>
+
+<div class="field">
+<label>Raça</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Idade</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Peso</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Data</label>
+<input type="date">
+</div>
+
+<div class="field">
+<label>Bairro / Unidade</label>
+<input type="text">
+</div>
+
+<div class="field">
+<label>Procedimento</label>
+<input type="text">
+</div>
+
+</div>
+
+</div>
+
+<div class="section print-hide">
+
+<h2>Odontograma</h2>
+
+<div class="toolbar">
+
+<select id="statusMode">
+
+<option value="selected">Radiografado</option>
+
+<option value="alert">Alteração</option>
+
+<option value="extracted">Extraído</option>
+
+</select>
+
+<select id="alteration">
+
+<option value="">Selecionar alteração</option>
+
+<option value="mobilidade">Mobilidade dentária</option>
+
+<option value="periodontal">Doença periodontal</option>
+
+<option value="lesao">Lesão de reabsorção</option>
+
+<option value="periapical">Lesão periapical</option>
+
+<option value="fratura">Fratura dentária</option>
+
+<option value="raiz">Raiz residual</option>
+
+<option value="complexo">Complexo gengivoestomatite</option>
+
+</select>
+
+</div>
+
+<div class="odontograma" id="odontograma"></div>
+
+</div>
+
+<div class="section">
+
+<h2>Imagens Radiográficas</h2>
+
+<div class="images">
+
+<label class="image-box">
+<input type="file" accept="image/*" onchange="preview(event,0)" class="print-hide">
+<img id="img0">
+</label>
+
+<label class="image-box">
+<input type="file" accept="image/*" onchange="preview(event,1)" class="print-hide">
+<img id="img1">
+</label>
+
+<label class="image-box">
+<input type="file" accept="image/*" onchange="preview(event,2)" class="print-hide">
+<img id="img2">
+</label>
+
+<label class="image-box">
+<input type="file" accept="image/*" onchange="preview(event,3)" class="print-hide">
+<img id="img3">
+</label>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h2>Laudo Radiográfico</h2>
+
+<div class="laudo" id="laudo"></div>
+
+</div>
+
+<div class="section">
+
+<h2>Observações</h2>
+
+<textarea placeholder="Observações adicionais"></textarea>
+
+</div>
+
+<div class="section">
+
+<h2>Recomendações</h2>
+
+<textarea placeholder="Recomendações adicionais"></textarea>
+
+</div>
+
+<div class="assinatura">
+
+<div style="margin-bottom:12px;">
+Médico Veterinário
+</div>
+
+<input type="text" placeholder="Nome do Médico Veterinário">
+
+<br><br>
+
+<input type="text" placeholder="CRMV">
+
+</div>
+
+<div class="buttons print-hide">
+
+<button onclick="montarLaudo()">
+Atualizar Laudo
+</button>
+
+<button onclick="window.print()">
+Gerar PDF / Imprimir
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const modeloBase = {
+
+elementos: "Elementos dentários permanentes presentes, sem alterações estruturais evidentes na maioria dos dentes avaliados.",
+
+raizes: "Contornos radiculares preservados, sem evidência de alterações periapicais significativas nos demais elementos avaliados.",
+
+ligamento: "Espaço do ligamento periodontal e lâmina dura preservados na maioria dos elementos avaliados.",
+
+osso: "Altura e densidade do osso alveolar preservadas de maneira geral.",
+
+furca: "Sem evidência de exposição de furca nos elementos avaliados.",
+
+outras: "Sem alterações radiográficas adicionais dignas de nota.",
+
+impressao: "Achados radiográficos sem alterações significativas além das descritas acima."
+
+};
+
+const alteracoesConfig = {
+
+mobilidade: {
+
+elementos: d => `Elemento ${d} apresentando mobilidade dentária associada a comprometimento periodontal.`,
+
+ligamento: d => `Alargamento do espaço do ligamento periodontal associado ao elemento ${d}.`,
+
+osso: d => `Perda óssea alveolar adjacente ao elemento ${d}.`,
+
+impressao: d => `Achados compatíveis com doença periodontal envolvendo o elemento ${d}.`
+
+},
+
+periodontal: {
+
+elementos: d => `Elemento ${d} apresentando sinais compatíveis com doença periodontal.`,
+
+ligamento: d => `Perda de definição da lâmina dura associada ao elemento ${d}.`,
+
+osso: d => `Rarefação óssea alveolar adjacente ao elemento ${d}.`,
+
+furca: d => `Possível comprometimento de furca associado ao elemento ${d}.`,
+
+impressao: d => `Achados radiográficos compatíveis com doença periodontal.`
+
+},
+
+lesao: {
+
+elementos: d => `Lesão de reabsorção identificada no elemento ${d}.`,
+
+raizes: d => `Perda da integridade radicular associada ao elemento ${d}.`,
+
+osso: d => `Discreta rarefação óssea adjacente ao elemento ${d}.`,
+
+impressao: d => `Achados compatíveis com lesão de reabsorção envolvendo o elemento ${d}.`
+
+},
+
+periapical: {
+
+raizes: d => `Área de rarefação óssea periapical associada ao elemento ${d}.`,
+
+ligamento: d => `Perda da definição da lâmina dura no elemento ${d}.`,
+
+osso: d => `Rarefação óssea periapical associada ao elemento ${d}.`,
+
+impressao: d => `Achados compatíveis com lesão periapical no elemento ${d}.`
+
+},
+
+fratura: {
+
+elementos: d => `Fratura dentária observada no elemento ${d}.`,
+
+raizes: d => `Comprometimento estrutural do elemento ${d}.`,
+
+impressao: d => `Achados compatíveis com fratura dentária envolvendo o elemento ${d}.`
+
+},
+
+raiz: {
+
+raizes: d => `Presença de raiz residual associada ao elemento ${d}.`,
+
+impressao: d => `Presença de raiz residual observada no elemento ${d}.`
+
+},
+
+complexo: {
+
+outras: d => `Achados compatíveis com complexo gengivoestomatite felina, com processo inflamatório oral difuso.`,
+
+impressao: d => `Alterações radiográficas compatíveis com complexo gengivoestomatite felina.`
+
+}
+
+};
+
+const alteracoesSelecionadas = [];
+
+function adicionarAlteracao(dente,tipo){
+
+alteracoesSelecionadas.push({
+dente:dente,
+tipo:tipo
+});
+
+montarLaudo();
+
+}
+
+function montarLaudo(){
+
+let secoes = {
+...modeloBase
+};
+
+Object.keys(secoes).forEach(secao=>{
+
+secoes[secao] = [ secoes[secao] ];
+
+});
+
+alteracoesSelecionadas.forEach(item=>{
+
+const regra = alteracoesConfig[item.tipo];
+
+if(!regra) return;
+
+Object.keys(regra).forEach(secao=>{
+
+secoes[secao].push(
+regra[secao](item.dente)
+);
+
+});
+
+});
+
+const texto = `
+
+Arcada avaliada com adequada definição de estruturas mineralizadas, permitindo análise dos elementos dentários e tecidos de suporte.
+
+Elementos dentários:
+${secoes.elementos.join(" ")}
+
+Raízes dentárias e região periapical:
+${secoes.raizes.join(" ")}
+
+Espaço do ligamento periodontal e lâmina dura:
+${secoes.ligamento.join(" ")}
+
+Osso alveolar:
+${secoes.osso.join(" ")}
+
+Região de furca:
+${secoes.furca.join(" ")}
+
+Outras estruturas:
+${secoes.outras.join(" ")}
+
+Impressão radiográfica:
+${secoes.impressao.join(" ")}
+
+`;
+
+document.getElementById("laudo").innerText = texto;
+
+}
+
+function renderTeeth(){
+
+const especie = document.getElementById('species').value;
+
+const dados = especie === 'cao'
+
+? [
+
+['Maxila direita',['108','107','106','105','104','103','102','101']],
+
+['Maxila esquerda',['201','202','203','204','205','206','207','208','209']],
+
+['Mandíbula direita',['408','407','406','405','404','403','402','401']],
+
+['Mandíbula esquerda',['301','302','303','304','305','306','307','308','309']]
+
+]
+
+: [
+
+['Maxila direita',['107','106','105','104','103','102','101']],
+
+['Maxila esquerda',['201','202','203','204','205','206','207']],
+
+['Mandíbula direita',['407','406','405','404','403','402','401']],
+
+['Mandíbula esquerda',['301','302','303','304','305','306','307']]
+
+];
+
+const odontograma = document.getElementById('odontograma');
+
+odontograma.innerHTML = '';
+
+dados.forEach(grupo=>{
+
+const row = document.createElement('div');
+
+row.className = 'row';
+
+const title = document.createElement('div');
+
+title.className = 'row-title';
+
+title.innerText = grupo[0];
+
+row.appendChild(title);
+
+grupo[1].forEach(num=>{
+
+const tooth = document.createElement('div');
+
+tooth.className = 'tooth';
+
+tooth.innerText = num;
+
+tooth.onclick = ()=>{
+
+const modo = document.getElementById('statusMode').value;
+
+const alteracao = document.getElementById('alteration').value;
+
+tooth.classList.remove('selected','alert','extracted');
+
+if(modo === 'selected'){
+tooth.classList.add('selected');
+}
+
+if(modo === 'alert'){
+tooth.classList.add('alert');
+}
+
+if(modo === 'extracted'){
+tooth.classList.add('extracted');
+}
+
+if(alteracao !== ''){
+adicionarAlteracao(num,alteracao);
+}
+
+};
+
+row.appendChild(tooth);
+
+});
+
+odontograma.appendChild(row);
+
+});
+
+}
+
+function preview(event,index){
+
+const file = event.target.files[0];
+
+if(!file) return;
+
+const reader = new FileReader();
+
+reader.onload = function(e){
+
+document.getElementById('img'+index).src = e.target.result;
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+renderTeeth();
+
+montarLaudo();
+
+</script>
+
+</body>
+</html>
